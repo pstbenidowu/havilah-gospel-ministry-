@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Admin | Havilah Gospel</title><link rel="stylesheet" href="style.css">
+<style>body{background:#eef1f6}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.tabs button{padding:9px 16px;border:1px solid #c3cbdb;background:#fff;border-radius:4px;cursor:pointer;font:inherit}.tabs .on{background:var(--navy);color:#fff}.row{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #e1e5ee}.row img{width:56px;height:56px;object-fit:cover;border-radius:4px}.row span{flex:1}.del{background:var(--flame);color:#fff;border:0;border-radius:4px;padding:6px 12px;cursor:pointer}label{font-weight:700;font-size:.9rem}</style></head><body>
+<div class="wrap" style="padding-top:30px"><h1 style="color:var(--navy)">Havilah Admin Dashboard</h1>
+<div id="login" class="card" style="max-width:380px"><form id="lf"><label>Admin password<input type="password" id="pw" required></label><button class="btn">Log in</button><span class="msg" id="lm"></span></form></div>
+<div id="app" hidden><div class="tabs" id="tabs"></div><div class="two"><div class="card"><h3 id="title"></h3><form id="f"></form><span class="msg" id="fm" role="status"></span></div><div class="card"><h3>Existing items</h3><div id="items"></div></div></div></div></div>
+<script>
+const T = {
+ gallery:{label:'Gallery',file:'image',fields:[['title','Photo caption / event']]},
+ audio:{label:'Audio library',file:'audio',fields:[['title','Message title'],['speaker','Speaker']]},
+ sermons:{label:'Sermons',file:'video',fields:[['title','Title'],['preacher','Preacher'],['description','Summary','t']]},
+ devotionals:{label:'Daily devotional',fields:[['title','Title'],['devoDate','Date','d'],['scripture','Scripture'],['body','Devotional message','t'],['prayer','Prayer (optional)']]},
+ programs:{label:'Upcoming programs',file:'image',fields:[['title','Program name'],['programDate','Date (e.g. Friday, 11 Dec 2026)'],['time','Time'],['venue','Venue']]},
+ departments:{label:'Departments',fields:[['name','Department name'],['description','Description','t']]},
+ books:{label:'Books',file:'image',fields:[['title','Book title'],['author','Author'],['price','Price (e.g. ₦3,000)'],['description','Description','t']]},
+ prayer:{label:'Prayer requests',inbox:1},testimonies:{label:'Testimonies (approve to publish)',inbox:1},partnership:{label:'Partners',inbox:1},contact:{label:'Messages',inbox:1}};
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let tok=sessionStorage.getItem('t'),cur='gallery';
+const H=()=>({'x-token':tok});
+$('#lf').onsubmit=async e=>{e.preventDefault();const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('#pw').value})});const j=await r.json();if(!r.ok)return $('#lm').textContent=j.error;tok=j.token;sessionStorage.setItem('t',tok);start()};
+function start(){$('#login').hidden=true;$('#app').hidden=false;$('#tabs').innerHTML=Object.entries(T).map(([k,v])=>`<button data-k="${k}">${v.label}</button>`).join('');show('gallery')}
+$('#tabs').onclick=e=>e.target.dataset.k&&show(e.target.dataset.k);
+function show(k){cur=k;const t=T[k];document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));$('#title').textContent=t.inbox?t.label:'Add to '+t.label;$('#fm').textContent='';
+ $('#f').hidden=!!t.inbox;$('#f').innerHTML=t.inbox?'':t.fields.map(([n,l,ty])=>`<label>${l}${ty==='t'?`<textarea name="${n}" ${n==='title'?'required':''}></textarea>`:`<input name="${n}" type="${ty==='d'?'date':'text'}" ${n==='title'||n==='name'?'required':''}>`}</label>`).join('')+(t.file?`<label>${t.file==='image'?'Image':t.file==='audio'?'Audio file':'Video file (optional)'}<input type="file" name="file" accept="${t.file}/*" ${t.file==='video'?'':'required'}></label>`:'')+'<button class="btn">Publish</button>';load()}
+async function load(){const k=cur,t=T[k];const r=await fetch(t.inbox?'/api/admin/inbox/'+k:'/api/content/'+k,{headers:H()});const a=await r.json();
+ $('#items').innerHTML=a.length?a.map(i=>`<div class="row">${i.file&&/\.(jpe?g|png|webp|gif)$/i.test(i.file)?`<img src="${i.file}" alt="">`:''}<span><b>${esc(i.title||i.name)}</b><br><small>${esc((i.message||i.speaker||i.description||i.programDate||'').slice(0,120))}${i.phone||i.email?' · '+esc(i.phone||i.email):''}${i.type?' · '+esc(i.type):''}</small></span>${k==='testimonies'?`<button class="btn" data-a="${i.id}">${i.approved?'Unpublish':'Approve'}</button>`:''}<button class="del" data-d="${i.id}">Delete</button></div>`).join(''):'<p class="empty">Nothing here yet.</p>'}
+$('#items').onclick=async e=>{const d=e.target.dataset;if(d.a)await fetch(`/api/admin/inbox/testimonies/${d.a}/approve`,{method:'POST',headers:H()});else if(d.d&&confirm('Delete this item?'))await fetch(`/api/admin/${cur}/${d.d}`,{method:'DELETE',headers:H()});else return;load()};
+$('#f').onsubmit=async e=>{e.preventDefault();$('#fm').textContent='Uploading…';const r=await fetch('/api/admin/'+cur,{method:'POST',headers:H(),body:new FormData(e.target)});if(r.ok){$('#fm').textContent='Published';e.target.reset();load()}else $('#fm').textContent=(await r.json()).error||'Upload failed'};
+if(tok)start();
+</script></body></html>
