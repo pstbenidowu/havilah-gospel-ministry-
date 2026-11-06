@@ -52,3 +52,8 @@ footer{background:#08101f;color:#9fb0cc;padding:40px 0;text-align:center}
 #lb{position:fixed;inset:0;background:#000d;display:none;place-items:center;z-index:50}#lb.on{display:grid}#lb img{max-height:92vh}
 @media(max-width:820px){.hero .wrap,.two{grid-template-columns:1fr}.links{display:none;position:absolute;top:64px;left:0;right:0;background:var(--navy);padding:16px 20px;flex-direction:column}.links.on{display:flex}#menu{display:block}section{padding:60px 0}.portrait:before{inset:12px -8px -12px 8px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.lesson{border-left:6px solid var(--gold)}.lesson .wk{color:var(--flame);font-weight:700;margin:0}
+.lesson .lt{font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:700;color:var(--navy);margin:.1em 0 .4em}
+.lesson blockquote{margin:0 0 16px;padding:12px 18px;background:#f4ecd6;border-radius:4px;font-family:'Cormorant Garamond',serif;font-size:1.25rem}
+.lesson h4{margin:18px 0 6px;color:var(--navy)}.lesson p{max-width:70ch}

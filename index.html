@@ -32,7 +32,13 @@
 
 <section id="programs"><div class="wrap"><h2>Upcoming Programs</h2><div class="grid" id="programs-list"></div></div></section>
 
-<section class="dark" id="departments"><div class="wrap"><h2>Church Departments</h2><p class="lead">There is a place for you to serve and grow.</p><div class="grid" id="dept-list"></div></div></section>
+<section class="dark" id="departments"><div class="wrap two">
+ <div><h2>Join a Department</h2><p class="lead">Finished your new believers lessons? Choose where you will serve and grow, and we will connect with you.</p>
+ <form data-f="join"><input class="hp" name="website" tabindex="-1" autocomplete="off"><input name="name" placeholder="Full name" required><input name="phone" placeholder="Phone number" required>
+ <select name="department" id="dept-select" required><option value="">Choose a department</option></select>
+ <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" name="completed_lessons" value="Yes" style="width:auto" required> I have completed the 9-week new believers lessons</label>
+ <button class="btn">Join this department</button><span class="msg" role="status"></span></form></div>
+ <div><h3>Our departments</h3><div class="grid" id="dept-list" style="grid-template-columns:1fr"></div></div></div></section>
 
 <section id="messages"><div class="wrap"><h2>Sermons and Teachings</h2><div class="grid" id="sermon-list"></div>
  <h2 style="margin-top:60px">Audio Library</h2><div class="grid" id="audio-list"></div></div></section>
@@ -44,7 +50,7 @@
  <p><button class="btn ghost" id="plan-all">Show the full 365-day plan</button></p><ol id="plan-full" class="meta"></ol></div>
 </div></section>
 
-<section id="believers"><div class="wrap"><h2>New Believers: 9 Weeks of Foundation</h2><p class="lead">A nine-week journey that builds a strong foundation in Christ. Take one lesson each week.</p><div class="dark card" style="margin-top:20px" id="lessons"></div></div></section>
+<section id="believers"><div class="wrap"><h2>New Believers: 9 Weeks of Foundation</h2><p class="lead">A nine-week journey that builds a strong foundation in Christ. Take one lesson each week.</p><div id="lessons" style="margin-top:24px;display:grid;gap:22px"></div></div></section>
 
 <section class="dark" id="gallery"><div class="wrap"><h2>Gallery</h2><div class="gal" id="gal"></div></div></section>
 <div id="lb"><img alt=""></div>
@@ -66,7 +72,7 @@
  <form data-f="contact"><input class="hp" name="website" tabindex="-1" autocomplete="off"><input name="name" placeholder="Your name" required><input name="email" type="email" placeholder="Email or phone"><textarea name="message" placeholder="Your message" required></textarea><button class="btn">Send message</button><span class="msg" role="status"></span></form></div>
 </div></section>
 
-<footer><div class="wrap"><img src="images/logo.jpg" alt="" height="60" style="border-radius:6px"><p>© <span id="yr"></span> Havilah Gospel Ministries Int’l. Elevating destinies unto divine fulfilment.</p><p><a href="/admin.html">Admin</a></p></div></footer>
+<footer><div class="wrap"><img src="images/logo.jpg" alt="" height="60" style="border-radius:6px"><p>© <span id="yr"></span> Havilah Gospel Ministries Int’l. Elevating destinies unto divine fulfilment.</p><p><a href="admin.html">Admin</a></p></div></footer>
 <a class="wa" target="_blank" rel="noopener" href="https://wa.me/2348168629983?text=Hello%20Havilah%20Gospel%20Ministries">Chat on WhatsApp</a>
 <script>document.getElementById('yr').textContent=new Date().getFullYear()</script>
 <script src="app.js"></script>
