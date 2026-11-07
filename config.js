@@ -1,4 +1,3 @@
-// Paste your values from Supabase > Project Settings > API. The anon key is meant to be public;
-// the database rules (schema.sql) are what keep private data safe.
-window.SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
-window.SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+// Supabase connection. The publishable key is meant to be public; the database rules in schema.sql protect private data.
+window.SUPABASE_URL = 'https://crggofmvkhcgozxnrmin.supabase.co';
+window.SUPABASE_ANON_KEY = 'sb_publishable_yyPxf5Lx_HyN2nP5sfFcfQ_suetAKaF';
