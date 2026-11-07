@@ -1,5 +1,11 @@
 const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const get = c => fetch('api/content/' + c).then(r => { if (!r.ok) throw 0; return r.json(); }).catch(() => fetch('data/' + c + '.json').then(r => r.json()).catch(() => []));
+const sb = window.SUPABASE_URL && !window.SUPABASE_URL.includes('YOUR') ? supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
+const KIND = {gallery:'gallery', audio:'audio', sermons:'sermon', devotionals:'devotional', programs:'program', books:'book'};
+const get = async c => { if (!sb) return [];
+  if (c === 'departments') return (await sb.from('departments').select('*').order('name')).data || [];
+  if (c === 'testimonies') return (await sb.from('submissions').select('*').eq('kind','testimony').eq('approved',true).order('created_at',{ascending:false})).data || [];
+  const {data} = await sb.from('items').select('*').eq('kind', KIND[c]).order('created_at',{ascending:false});
+  return (data || []).map(i => ({...i.data, id:i.id, title:i.title, file:i.file_url, date:i.created_at})); };
 const fmt = d => d ? new Date(d).toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'}) : '';
 const empty = t => `<p class="empty">${t}</p>`;
 
@@ -47,7 +53,7 @@ document.querySelectorAll('form[data-f]').forEach(f => f.addEventListener('submi
   e.preventDefault(); const k = f.dataset.f, d = Object.fromEntries(new FormData(f)); delete d.website;
   const labels = {name:'Name', phone:'Phone', email:'Email', type:'Type', department:'Department', message:'Message'};
   const text = `*${TITLES[k]}* – Havilah Gospel Ministries Int'l\n` + Object.entries(d).filter(([,v]) => v).map(([n,v]) => `${labels[n] || n}: ${v}`).join('\n');
-  fetch('api/submit/' + k, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(d)}).catch(() => {});
+  if (sb) sb.from('submissions').insert({kind: k === 'testimonies' ? 'testimony' : k, name: d.name, phone: d.phone || null, email: d.email || null, message: d.message || null, extra: {type: d.type, department: d.department, completed_lessons: d.completed_lessons}}).then(() => {});
   window.open(`https://wa.me/${WA}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
   f.querySelector('.msg').textContent = 'WhatsApp is opening. Please tap Send to deliver your message.'; f.reset();
 }));
@@ -55,3 +61,11 @@ $('#menu').onclick = () => $('.links').classList.toggle('on');
 document.querySelectorAll('.links a').forEach(a => a.onclick = () => $('.links').classList.remove('on'));
 $('#gal').addEventListener('click', e => { if (e.target.tagName === 'IMG') { $('#lb img').src = e.target.src; $('#lb').classList.add('on'); } });
 $('#lb').onclick = () => $('#lb').classList.remove('on');
+
+// ---------- Giving ----------
+const GIVE = [['TITHE','Malachi 3:10','Return the first tenth of your increase to the Lord.'],['EVANGELISM SUPPORT','Mark 16:15','Help us carry the gospel to cities and villages.'],['PROPHETIC','2 Chronicles 20:20','Sow into the prophetic and receive a word from God.'],['FIRST FRUIT OFFERING','Proverbs 3:9','Honour God with the first of all your increase.'],['CHURCH DONATION','2 Corinthians 9:7','Give cheerfully towards the growth of the house of God.']];
+$('#give-cats').innerHTML = GIVE.map(([n,v,t]) => `<label class="card gcat"><input type="radio" name="category" value="${n}" required><b>${n}</b><span class="meta">${v}</span><span>${t}</span></label>`).join('');
+$('#copy-acct').onclick = () => { navigator.clipboard?.writeText('9016062232'); $('#copy-acct').textContent = 'Copied'; setTimeout(() => $('#copy-acct').textContent = 'Copy account number', 2000); };
+$('#give-form').addEventListener('submit', e => { e.preventDefault(); const d = Object.fromEntries(new FormData(e.target));
+  const text = `*GIVING RECEIPT* – Havilah Gospel Ministries Int'l\nName: ${d.name}\nCategory: ${d.category}\n${d.amount ? 'Amount: ' + d.amount + '\n' : ''}${d.note ? 'Prayer / prophetic request: ' + d.note + '\n' : ''}I have sown my seed. Please find my receipt attached.`;
+  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(text)}`, '_blank', 'noopener'); });

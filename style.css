@@ -57,3 +57,5 @@ footer{background:#08101f;color:#9fb0cc;padding:40px 0;text-align:center}
 .lesson .lt{font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:700;color:var(--navy);margin:.1em 0 .4em}
 .lesson blockquote{margin:0 0 16px;padding:12px 18px;background:#f4ecd6;border-radius:4px;font-family:'Cormorant Garamond',serif;font-size:1.25rem}
 .lesson h4{margin:18px 0 6px;color:var(--navy)}.lesson p{max-width:70ch}
+
+.gcat{display:grid;gap:2px;padding:14px 16px 14px 44px;position:relative;cursor:pointer}.gcat input{position:absolute;left:14px;top:18px;width:auto}.gcat b{color:var(--gold2)}.gcat:has(input:checked){border-color:var(--gold);background:#1d3560}
